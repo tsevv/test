@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShadowVault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --accent: #00ffff;
+      --danger: #ff0044;
+      --glass: rgba(255, 255, 255, 0.05);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, var(--bg), #1a1a1a);
+      color: var(--accent);
+      overflow-x: hidden;
+    }
+
+    header {
+      background-color: #111;
+      padding: 1em 2em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2em;
+      color: var(--danger);
+      animation: glitch 1s infinite;
+    }
+
+    @keyframes glitch {
+      0% { text-shadow: 2px 0 var(--accent); }
+      50% { text-shadow: -2px 0 var(--danger); }
+      100% { text-shadow: 2px 0 var(--accent); }
+    }
+
+    nav a {
+      color: var(--accent);
+      text-decoration: none;
+      margin-left: 1em;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: var(--danger);
+    }
+
+    .dashboard {
+      display: flex;
+      justify-content: space-between;
+      padding: 2em;
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--accent);
+    }
+
+    .wallet {
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .wallet h2 {
+      margin: 0;
+      font-size: 1.2em;
+    }
+
+    .wallet p {
+      margin: 0.5em 0;
+    }
+
+    .main {
+      padding: 2em;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2em;
+    }
+
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--accent);
+      padding: 1em;
+      border-radius: 10px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px var(--accent);
+    }
+
+    .filters {
+      padding: 1em 2em;
+      background: #111;
+      display: flex;
+      gap: 1em;
+      color: #ccc;
+    }
+
+    .filters select, .filters input {
+      background: #222;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.5em;
+      border-radius: 5px;
+    }
+
+    footer {
+      background-color: #111;
+      text-align: center;
+      padding: 1em;
+      color: #888;
+      font-size: 0.9em;
+    }
+
+    .terminal {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #000;
+      color: #0f0;
+      font-family: 'Roboto Mono', monospace;
+      padding: 1em;
+      height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ShadowVault</h1>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Inventory</a>
+      <a href="#">Orders</a>
+      <a href="#">Support</a>
+      <a href="#">Settings</a>
+    </nav>
+  </header>
+
+  <div class="dashboard">
+    <div class="wallet">
+      <h2>Crypto Wallet</h2>
+      <p>Balance: Ξ 3.142 ETH</p>
+      <p>Last Transaction: +Ξ 0.5</p>
+    </div>
+    <div class="status">
+      <h2>Server Status</h2>
+      <p>Encrypted ✅</p>
+      <p>Latency: 42ms</p>
+    </div>
+  </div>
+
+  <div class="filters">
+    <label>Country:
+      <select>
+        <option>All</option>
+        <option>Fictionland</option>
+        <option>Imagistan</option>
+      </select>
+    </label>
+    <label>BIN:
+      <input type="text" placeholder="Enter BIN">
+    </label>
+    <label>Freshness:
+      <select>
+        <option>All</option>
+        <option>🔥 Hot</option>
+        <option>🧊 Cold</option>
+      </select>
+    </label>
+  </div>
+
+  <section class="main">
+    <div class="card">
+      <h2>Card #001</h2>
+      <p>Country: Fictionland</p>
+      <p>BIN: 123456</p>
+      <p>Freshness: 🔥</p>
+    </div>
+    <div class="card">
+      <h2>Card #002</h2>
+      <p>Country: Imagistan</p>
+      <p>BIN: 654321</p>
+      <p>Freshness: 🧊</p>
+    </div>
+    <div class="card">
+      <h2>Card #003</h2>
+      <p>Country: Cryptonia</p>
+      <p>BIN: 777888</p>
+      <p>Freshness: 🧨</p>
+    </div>
+  </section>
+
+  <div class="terminal" id="terminal">
+    <p>ShadowVault Terminal Activated...</p>
+    <p>Type /help for commands</p>
+  </div>
+
+  <footer>
+    &copy; 2025 ShadowVault — All rights encrypted 🔒
+  </footer>
+
+  <script>
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && !document.getElementById('terminal').style.display) {
+        document.getElementById('terminal').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
