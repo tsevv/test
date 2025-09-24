@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAW Threads</title>
+  <style>
+    :root {
+      --primary: #e91e63;
+      --bg: #0f0f0f;
+      --card-bg: #1a1a1a;
+      --text: #fff;
+      --transition: 0.3s ease;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      background: #000;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      box-shadow: 0 2px 5px var(--primary);
+      z-index: 100;
+    }
+    header nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: bold;
+      transition: color var(--transition);
+      cursor: pointer;
+    }
+    header nav a:hover {
+      color: var(--primary);
+    }
+    .section {
+      display: none;
+      padding: 2rem;
+      animation: fadeIn var(--transition);
+    }
+    .section.active {
+      display: block;
+    }
+    #landing {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      background: linear-gradient(135deg, #111, #222);
+    }
+    #landing h1 {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    #landing p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #ccc;
+    }
+    #landing button {
+      background: var(--primary);
+      border: none;
+      padding: 0.8rem 1.5rem;
+      color: var(--text);
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    #landing button:hover {
+      background: #ff4081;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+    }
+    .product {
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      text-align: center;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .product:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px var(--primary);
+    }
+    .product img {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+      background: transparent;
+    }
+    .product h3 {
+      margin: 0.8rem 0;
+      font-size: 1rem;
+    }
+    .product p {
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+    .product button {
+      background: var(--primary);
+      border: none;
+      padding: 0.5rem 1rem;
+      margin: 0.8rem 0;
+      border-radius: 4px;
+      color: var(--text);
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .product button:hover {
+      background: #ff4081;
+    }
+    #cartModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 5px 15px var(--primary);
+      z-index: 200;
+      transition: transform var(--transition);
+    }
+    #cartModal.active {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    #cartModal h2 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    #cartItems {
+      list-style: none;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+    }
+    #cartItems li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    #cartItems li span {
+      flex: 1;
+    }
+    #cartItems li input {
+      width: 3rem;
+      text-align: center;
+      margin: 0 0.5rem;
+    }
+    #cartItems li button {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    #cartTotal {
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    #closeCart {
+      background: #555;
+      border: none;
+      padding: 0.5rem 1rem;
+      color: var(--text);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 600px) {
+      header { flex-direction: column; gap: 0.5rem; padding: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav>
+      <a onclick="showSection('landing')">Home</a>
+      <a onclick="showSection('sp5der')">Sp5der</a>
+      <a onclick="showSection('hellstar')">Hellstar</a>
+      <a onclick="showSection('chrome')">Chrome Hearts</a>
+      <a onclick="openCart()">Cart (<span id="cartCount">0</span>)</a>
+    </nav>
+  </header>
+
+  <section id="landing" class="section active">
+    <h1>RAW THREADS</h1>
+    <p>Premium resell gear. Real brands. Real prices.</p>
+    <button onclick="showSection('sp5der')">Shop Now</button>
+  </section>
+
+  <section id="sp5der" class="section">
+    <h2>Sp5der Collection</h2>
+    <div class="grid" id="sp5derGrid"></div>
+  </section>
+
+  <section id="hellstar" class="section">
+    <h2>Hellstar Collection</h2>
+    <div class="grid" id="hellstarGrid"></div>
+  </section>
+
+  <section id="chrome" class="section">
+    <h2>Chrome Hearts Collection</h2>
+    <div class="grid" id="chromeGrid"></div>
+  </section>
+
+  <div id="cartModal">
+    <h2>Your Cart</h2>
+    <ul id="cartItems"></ul>
+    <p id="cartTotal">Total: $0</p>
+    <button id="closeCart" onclick="closeCart()">Close</button>
+  </div>
+
+  <script>
+    const products = {
+      sp5der: [
+        { name: 'Sp5der Web Hoodie Black', price: 105, img: 'https://images.stockx.com/images/Sp5der-Web-Hoodie-Black.png' },
+        { name: 'Sp5der Web Hoodie Purple', price: 105, img: 'https://images.stockx.com/images/Sp5der-Web-Hoodie-Purple.png' },
+        { name: 'Sp5der Web Hoodie Camo', price: 105, img: 'https://images.stockx.com/images/Sp5der-Web-Hoodie-Camo.png' },
+      ],
+      hellstar: [
+        { name: 'Hellstar Flame Hoodie Grey', price: 105, img: 'https://images.stockx.com/images/Hellstar-Future-Flame-Hoodie-Grey.png' },
+        { name: 'Hellstar Flame Hoodie Orange', price: 105, img: 'https://images.stockx.com/images/Hellstar-Future-Flame-Hoodie-Orange.png' },
+        { name: 'Hellstar Flame Hoodie Black', price: 105, img: 'https://images.stockx.com/images/Hellstar-Future-Flame-Hoodie-Black.png' },
+      ],
+      chrome: [
+        { name: 'Chrome Hearts Cross Hoodie Black', price: 105, img: 'https://images.stockx.com/images/Chrome-Hearts-Triple-Cross-Zip-Hoodie.png' },
+        { name: 'Chrome Hearts Cross Hoodie Gray', price: 105, img: 'https://images.stockx.com/images/Chrome-Hearts-Triple-Cross-Zip-Hoodie-Gray.png' },
+        { name: 'Chrome Hearts Cross Hoodie Multicolor', price: 105, img: 'https://images.stockx.com/images/Chrome-Hearts-Triple-Cross-Zip-Hoodie-Multicolor.png' },
+      ]
+    };
+
+    const cart = [];
+
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (id !== 'landing') history.pushState(null, '', `#${id}`);
+    }
+
+    function init() {
+      ['sp5der', 'hellstar', 'chrome'].forEach(key => {
+        const grid = document.getElementById(key + 'Grid');
+        products[key].forEach((p, i) => {
+          const card = document.createElement('div');
+          card.className = 'product';
+          card.innerHTML = `
+            <img src="${p.img}" alt="${p.name}">
+            <h3>${p.name}</h3>
+            <p>$${p.price}</p>
+            <button onclick="addToCart('${key}', ${i})">Add to Cart</button>
+          `;
+          grid.appendChild(card);
+        });
+      });
+      window.addEventListener('popstate', () => {
+        const id = location.hash.replace('#', '') || 'landing';
+        showSection(id);
+      });
+    }
+
+    function addToCart(category, index) {
+      const item = products[category][index];
+      const existing = cart.find(c => c.name === item.name);
+      if (existing) existing.qty++;
+      else cart.push({ ...item, qty: 1 });
+      updateCart();
+    }
+
+    function updateCart() {
+      const cartItems = document.getElementById('cartItems');
+      const cartTotal = document.getElementById('cartTotal');
+      const cartCount = document.getElementById('cartCount');
+      cartItems.innerHTML = '';
+      let total = 0, count = 0;
+      cart.forEach((item, i) => {
+        total += item.price * item.qty;
+        count += item.qty;
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${item.name}</span>
+          <input type="number" min="1" value="${item.qty}" onchange="changeQty(${i}, this.value)">
+          <span>$${item.price * item.qty}</span>
+          <button onclick="removeItem(${i})">×</button>
+        `;
+        cartItems.appendChild(li);
+      });
+      cartTotal.textContent = `Total: $${total}`;
+      cartCount.textContent = count;
+    }
+
+    function changeQty(index, qty) {
+      cart[index].qty = parseInt(qty) || 1;
+      updateCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      updateCart();
+    }
+
+    function openCart() {
+      updateCart();
+      document.getElementById('cartModal').classList.add('active');
+    }
+
+    function closeCart() {
+      document.getElementById('cartModal').classList.remove('active');
+    }
+
+    init();
+  </script>
+</body>
+</html>
