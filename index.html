@@ -12,44 +12,65 @@
       --text: #fff;
       --transition: 0.3s ease;
     }
-    * {
+    *, *::before, *::after {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
     body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text);
       overflow-x: hidden;
+      scroll-behavior: smooth;
     }
     header {
       position: sticky;
       top: 0;
       background: #000;
-      padding: 1rem;
       display: flex;
-      justify-content: center;
-      gap: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
       box-shadow: 0 2px 5px var(--primary);
       z-index: 100;
     }
-    header nav a {
+    nav {
+      display: flex;
+      gap: 1rem;
+    }
+    nav a {
       color: var(--text);
       text-decoration: none;
       font-weight: bold;
       transition: color var(--transition);
       cursor: pointer;
     }
-    header nav a:hover {
+    nav a:hover {
       color: var(--primary);
     }
-    .section {
+    #controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    #search {
+      padding: 0.4rem;
+      border-radius: 4px;
+      border: none;
+      width: 150px;
+    }
+    #brandFilter {
+      padding: 0.4rem;
+      border-radius: 4px;
+      border: none;
+    }
+    section {
       display: none;
       padding: 2rem;
       animation: fadeIn var(--transition);
     }
-    .section.active {
+    section.active {
       display: block;
     }
     #landing {
@@ -67,8 +88,8 @@
     }
     #landing p {
       font-size: 1.2rem;
-      margin-bottom: 2rem;
       color: #ccc;
+      margin-bottom: 2rem;
     }
     #landing button {
       background: var(--primary);
@@ -82,6 +103,10 @@
     }
     #landing button:hover {
       background: #ff4081;
+    }
+    #shop {
+      max-width: 1200px;
+      margin: 0 auto;
     }
     .grid {
       display: grid;
@@ -126,7 +151,7 @@
     .product button:hover {
       background: #ff4081;
     }
-    #cartModal {
+    #cartModal, #checkoutModal {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -135,15 +160,15 @@
       padding: 2rem;
       border-radius: 8px;
       width: 90%;
-      max-width: 400px;
+      max-width: 450px;
       box-shadow: 0 5px 15px var(--primary);
       z-index: 200;
       transition: transform var(--transition);
     }
-    #cartModal.active {
+    #cartModal.active, #checkoutModal.active {
       transform: translate(-50%, -50%) scale(1);
     }
-    #cartModal h2 {
+    #cartModal h2, #checkoutModal h2 {
       color: var(--primary);
       margin-bottom: 1rem;
     }
@@ -158,40 +183,71 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 0.5rem;
-    }
-    #cartItems li span {
-      flex: 1;
+      gap: 0.5rem;
     }
     #cartItems li input {
       width: 3rem;
       text-align: center;
-      margin: 0 0.5rem;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #111;
+      color: var(--text);
     }
     #cartItems li button {
       background: transparent;
       border: none;
       color: var(--primary);
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 1.2rem;
     }
     #cartTotal {
       font-weight: bold;
       margin-bottom: 1rem;
     }
-    #closeCart {
+    #closeCart, #checkoutBtn, #closeCheckout {
       background: #555;
       border: none;
       padding: 0.5rem 1rem;
       color: var(--text);
       border-radius: 4px;
       cursor: pointer;
+      margin-right: 0.5rem;
+    }
+    #checkoutForm {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    #checkoutForm input {
+      padding: 0.6rem;
+      border-radius: 4px;
+      border: none;
+      background: #111;
+      color: var(--text);
+    }
+    #checkoutForm button {
+      background: var(--primary);
+      border: none;
+      padding: 0.6rem;
+      border-radius: 4px;
+      color: var(--text);
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    #checkoutForm button:hover {
+      background: #ff4081;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #000;
+      margin-top: 2rem;
+      color: #666;
+      font-size: 0.9rem;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-    @media (max-width: 600px) {
-      header { flex-direction: column; gap: 0.5rem; padding: 0.5rem; }
     }
   </style>
 </head>
@@ -200,91 +256,109 @@
   <header>
     <nav>
       <a onclick="showSection('landing')">Home</a>
-      <a onclick="showSection('sp5der')">Sp5der</a>
-      <a onclick="showSection('hellstar')">Hellstar</a>
-      <a onclick="showSection('chrome')">Chrome Hearts</a>
+      <a onclick="showSection('shop')">Shop</a>
       <a onclick="openCart()">Cart (<span id="cartCount">0</span>)</a>
     </nav>
+    <div id="controls">
+      <input id="search" type="search" placeholder="Search products..." oninput="filterProducts()" />
+      <select id="brandFilter" onchange="filterProducts()">
+        <option value="all">All Brands</option>
+        <option value="sp5der">Sp5der</option>
+        <option value="hellstar">Hellstar</option>
+        <option value="chrome">Chrome Hearts</option>
+      </select>
+    </div>
   </header>
 
-  <section id="landing" class="section active">
+  <section id="landing" class="active">
     <h1>RAW THREADS</h1>
     <p>Premium resell gear. Real brands. Real prices.</p>
-    <button onclick="showSection('sp5der')">Shop Now</button>
+    <button onclick="showSection('shop')">Enter Shop</button>
   </section>
 
-  <section id="sp5der" class="section">
-    <h2>Sp5der Collection</h2>
-    <div class="grid" id="sp5derGrid"></div>
-  </section>
-
-  <section id="hellstar" class="section">
-    <h2>Hellstar Collection</h2>
-    <div class="grid" id="hellstarGrid"></div>
-  </section>
-
-  <section id="chrome" class="section">
-    <h2>Chrome Hearts Collection</h2>
-    <div class="grid" id="chromeGrid"></div>
+  <section id="shop">
+    <div class="grid" id="productGrid"></div>
   </section>
 
   <div id="cartModal">
     <h2>Your Cart</h2>
     <ul id="cartItems"></ul>
     <p id="cartTotal">Total: $0</p>
+    <button id="checkoutBtn" onclick="openCheckout()">Checkout</button>
     <button id="closeCart" onclick="closeCart()">Close</button>
   </div>
 
+  <div id="checkoutModal">
+    <h2>Checkout</h2>
+    <form id="checkoutForm" onsubmit="completeCheckout(event)">
+      <input type="text" placeholder="Name" required />
+      <input type="email" placeholder="Email" required />
+      <input type="text" placeholder="Address" required />
+      <button type="submit">Place Order</button>
+    </form>
+    <button id="closeCheckout" onclick="closeCheckout()">Cancel</button>
+  </div>
+
+  <footer>&copy; 2025 RAW Threads. All rights reserved.</footer>
+
   <script>
-    const products = {
-      sp5der: [
-        { name: 'Sp5der Web Hoodie Black', price: 105, img: 'https://images.stockx.com/images/Sp5der-Web-Hoodie-Black.png' },
-        { name: 'Sp5der Web Hoodie Purple', price: 105, img: 'https://images.stockx.com/images/Sp5der-Web-Hoodie-Purple.png' },
-        { name: 'Sp5der Web Hoodie Camo', price: 105, img: 'https://images.stockx.com/images/Sp5der-Web-Hoodie-Camo.png' },
-      ],
-      hellstar: [
-        { name: 'Hellstar Flame Hoodie Grey', price: 105, img: 'https://images.stockx.com/images/Hellstar-Future-Flame-Hoodie-Grey.png' },
-        { name: 'Hellstar Flame Hoodie Orange', price: 105, img: 'https://images.stockx.com/images/Hellstar-Future-Flame-Hoodie-Orange.png' },
-        { name: 'Hellstar Flame Hoodie Black', price: 105, img: 'https://images.stockx.com/images/Hellstar-Future-Flame-Hoodie-Black.png' },
-      ],
-      chrome: [
-        { name: 'Chrome Hearts Cross Hoodie Black', price: 105, img: 'https://images.stockx.com/images/Chrome-Hearts-Triple-Cross-Zip-Hoodie.png' },
-        { name: 'Chrome Hearts Cross Hoodie Gray', price: 105, img: 'https://images.stockx.com/images/Chrome-Hearts-Triple-Cross-Zip-Hoodie-Gray.png' },
-        { name: 'Chrome Hearts Cross Hoodie Multicolor', price: 105, img: 'https://images.stockx.com/images/Chrome-Hearts-Triple-Cross-Zip-Hoodie-Multicolor.png' },
-      ]
-    };
+    const products = [
+      { brand: 'sp5der', name: 'Sp5der Web Hoodie Black', price: 105, img: 'https://images.stockx.com/images/Sp5der-Web-Hoodie-Black.png' },
+      { brand: 'sp5der', name: 'Sp5der Web Hoodie Purple', price: 105, img: 'https://images.stockx.com/images/Sp5der-Web-Hoodie-Purple.png' },
+      { brand: 'sp5der', name: 'Sp5der Web Hoodie Camo', price: 105, img: 'https://images.stockx.com/images/Sp5der-Web-Hoodie-Camo.png' },
+      { brand: 'hellstar', name: 'Hellstar Flame Hoodie Grey', price: 105, img: 'https://images.stockx.com/images/Hellstar-Future-Flame-Hoodie-Grey.png' },
+      { brand: 'hellstar', name: 'Hellstar Flame Hoodie Orange', price: 105, img: 'https://images.stockx.com/images/Hellstar-Future-Flame-Hoodie-Orange.png' },
+      { brand: 'hellstar', name: 'Hellstar Flame Hoodie Black', price: 105, img: 'https://images.stockx.com/images/Hellstar-Future-Flame-Hoodie-Black.png' },
+      { brand: 'chrome', name: 'Chrome Hearts Cross Hoodie Black', price: 105, img: 'https://images.stockx.com/images/Chrome-Hearts-Triple-Cross-Zip-Hoodie.png' },
+      { brand: 'chrome', name: 'Chrome Hearts Cross Hoodie Gray', price: 105, img: 'https://images.stockx.com/images/Chrome-Hearts-Triple-Cross-Zip-Hoodie-Gray.png' },
+      { brand: 'chrome', name: 'Chrome Hearts Cross Hoodie Multicolor', price: 105, img: 'https://images.stockx.com/images/Chrome-Hearts-Triple-Cross-Zip-Hoodie-Multicolor.png' },
+    ];
 
     const cart = [];
 
     function showSection(id) {
-      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
-      if (id !== 'landing') history.pushState(null, '', `#${id}`);
     }
 
-    function init() {
-      ['sp5der', 'hellstar', 'chrome'].forEach(key => {
-        const grid = document.getElementById(key + 'Grid');
-        products[key].forEach((p, i) => {
+    function initShop() {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = '';
+      products.forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = 'product';
+        card.innerHTML = `
+          <img src="${p.img}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>$${p.price}</p>
+          <button onclick="addToCart(${i})">Add to Cart</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterProducts() {
+      const term = document.getElementById('search').value.toLowerCase();
+      const brand = document.getElementById('brandFilter').value;
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = '';
+      products.forEach((p, i) => {
+        if ((brand === 'all' || p.brand === brand) && p.name.toLowerCase().includes(term)) {
           const card = document.createElement('div');
           card.className = 'product';
           card.innerHTML = `
             <img src="${p.img}" alt="${p.name}">
             <h3>${p.name}</h3>
             <p>$${p.price}</p>
-            <button onclick="addToCart('${key}', ${i})">Add to Cart</button>
+            <button onclick="addToCart(${i})">Add to Cart</button>
           `;
           grid.appendChild(card);
-        });
-      });
-      window.addEventListener('popstate', () => {
-        const id = location.hash.replace('#', '') || 'landing';
-        showSection(id);
+        }
       });
     }
 
-    function addToCart(category, index) {
-      const item = products[category][index];
+    function addToCart(index) {
+      const item = products[index];
       const existing = cart.find(c => c.name === item.name);
       if (existing) existing.qty++;
       else cart.push({ ...item, qty: 1 });
@@ -292,10 +366,10 @@
     }
 
     function updateCart() {
-      const cartItems = document.getElementById('cartItems');
-      const cartTotal = document.getElementById('cartTotal');
-      const cartCount = document.getElementById('cartCount');
-      cartItems.innerHTML = '';
+      const itemsEl = document.getElementById('cartItems');
+      const totalEl = document.getElementById('cartTotal');
+      const countEl = document.getElementById('cartCount');
+      itemsEl.innerHTML = '';
       let total = 0, count = 0;
       cart.forEach((item, i) => {
         total += item.price * item.qty;
@@ -307,19 +381,19 @@
           <span>$${item.price * item.qty}</span>
           <button onclick="removeItem(${i})">×</button>
         `;
-        cartItems.appendChild(li);
+        itemsEl.appendChild(li);
       });
-      cartTotal.textContent = `Total: $${total}`;
-      cartCount.textContent = count;
+      totalEl.textContent = `Total: $${total}`;
+      countEl.textContent = count;
     }
 
-    function changeQty(index, qty) {
-      cart[index].qty = parseInt(qty) || 1;
+    function changeQty(i, v) {
+      cart[i].qty = parseInt(v) || 1;
       updateCart();
     }
 
-    function removeItem(index) {
-      cart.splice(index, 1);
+    function removeItem(i) {
+      cart.splice(i, 1);
       updateCart();
     }
 
@@ -332,7 +406,24 @@
       document.getElementById('cartModal').classList.remove('active');
     }
 
-    init();
+    function openCheckout() {
+      closeCart();
+      document.getElementById('checkoutModal').classList.add('active');
+    }
+
+    function closeCheckout() {
+      document.getElementById('checkoutModal').classList.remove('active');
+    }
+
+    function completeCheckout(e) {
+      e.preventDefault();
+      cart.length = 0;
+      updateCart();
+      closeCheckout();
+      alert('Order placed! Thank you for shopping RAW Threads.');
+    }
+
+    initShop();
   </script>
 </body>
 </html>
