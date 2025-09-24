@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAW Threads</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: #0f0f0f;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    header {
+      background: #000;
+      padding: 1em;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    nav a {
+      margin: 0 1em;
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    section {
+      display: none;
+      padding: 2em;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    section.active {
+      display: block;
+    }
+    .product {
+      background: #1a1a1a;
+      margin: 2em auto;
+      padding: 1em;
+      max-width: 600px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #e91e63;
+    }
+    .product img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    .btn {
+      background: #e91e63;
+      color: #fff;
+      padding: 0.5em 1em;
+      border: none;
+      margin-top: 1em;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    #cartModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      padding: 2em;
+      border-radius: 10px;
+      display: none;
+      z-index: 9999;
+      max-width: 400px;
+    }
+    #cartModal h3 {
+      margin-top: 0;
+    }
+    #cartItems li {
+      margin: 0.5em 0;
+    }
+    #closeCart {
+      background: #555;
+      margin-top: 1em;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>RAW THREADS</h1>
+    <nav>
+      <a onclick="showSection('sp5der')">Sp5der</a>
+      <a onclick="showSection('hellstar')">Hellstar</a>
+      <a onclick="showSection('chrome')">Chrome Hearts</a>
+      <a onclick="openCart()">Cart</a>
+    </nav>
+  </header>
+
+  <section id="sp5der" class="active">
+    <div class="product" data-name="Sp5der Web Hoodie" data-price="220">
+      <h2>Sp5der Web Hoodie</h2>
+      <img src="https://images.stockx.com/images/Sp5der-Web-Hoodie-Black.jpg" alt="Sp5der Hoodie" />
+      <button class="btn" onclick="addToCart(this)">Add to Cart - $220</button>
+    </div>
+  </section>
+
+  <section id="hellstar">
+    <div class="product" data-name="Hellstar Flame Hoodie" data-price="180">
+      <h2>Hellstar Flame Hoodie</h2>
+      <img src="https://images.stockx.com/images/Hellstar-Future-Flame-Hoodie-Grey.jpg" alt="Hellstar Hoodie" />
+      <button class="btn" onclick="addToCart(this)">Add to Cart - $180</button>
+    </div>
+  </section>
+
+  <section id="chrome">
+    <div class="product" data-name="Chrome Hearts Cross Hoodie" data-price="350">
+      <h2>Chrome Hearts Cross Hoodie</h2>
+      <img src="https://images.stockx.com/images/Chrome-Hearts-Triple-Cross-Zip-Hoodie.jpg" alt="Chrome Hearts Hoodie" />
+      <button class="btn" onclick="addToCart(this)">Add to Cart - $350</button>
+    </div>
+  </section>
+
+  <div id="cartModal">
+    <h3>Your Cart</h3>
+    <ul id="cartItems"></ul>
+    <p id="cartTotal">Total: $0</p>
+    <button class="btn" id="closeCart" onclick="closeCart()">Close</button>
+  </div>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    const cart = [];
+
+    function addToCart(button) {
+      const product = button.closest('.product');
+      const name = product.dataset.name;
+      const price = parseFloat(product.dataset.price);
+      cart.push({ name, price });
+      alert(`${name} added to cart`);
+    }
+
+    function openCart() {
+      const cartItems = document.getElementById('cartItems');
+      const cartTotal = document.getElementById('cartTotal');
+      cartItems.innerHTML = '';
+      let total = 0;
+      cart.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - $${item.price}`;
+        cartItems.appendChild(li);
+        total += item.price;
+      });
+      cartTotal.textContent = `Total: $${total}`;
+      document.getElementById('cartModal').style.display = 'block';
+    }
+
+    function closeCart() {
+      document.getElementById('cartModal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
